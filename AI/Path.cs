@@ -13,7 +13,7 @@ namespace PlayerCSharpAI.AI
         public Point end { get; protected set; }
         public double pathScore { get; protected set; }
         public int pathLength { get; protected set; }
-        public double pathTime { get { return pathLength / pathScore;}; protected set;}
+        public double pathTime { get { return pathLength / pathScore;} protected set;}
 
         public Path(Point start, Point end, double pathScore)
         {
