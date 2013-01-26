@@ -27,3 +27,11 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.vssscc
 $tf*/
+bin/Debug/PlayerCSharpAI.exe
+bin/Debug/PlayerCSharpAI.pdb
+bin/Debug/PlayerCSharpAI.vshost.exe
+bin/Debug/PlayerCSharpAI.vshost.exe.manifest
+obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+obj/Debug/PlayerCSharpAI.csproj.FileListAbsolute.txt
+obj/Debug/PlayerCSharpAI.exe
+obj/Debug/PlayerCSharpAI.pdb

@@ -16,10 +16,10 @@ namespace PlayerCSharpAI.AI
 	public class MyPlayerBrain : IPlayerAI
 	{
 		// bugbug - put your team name here.
-		private const string NAME = "Anders Hejlsberg";
+		private const string NAME = "4 Bits";
 
 		// bugbug - put your school name here. Must be 11 letters or less (ie use MIT, not Massachussets Institute of Technology).
-		public const string SCHOOL = "Windward U.";
+		public const string SCHOOL = "UAlberta";
 
 		/// <summary>
 		/// The name of the player.
