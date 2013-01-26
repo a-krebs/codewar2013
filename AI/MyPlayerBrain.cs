@@ -21,6 +21,8 @@ namespace PlayerCSharpAI.AI
 		// bugbug - put your school name here. Must be 11 letters or less (ie use MIT, not Massachussets Institute of Technology).
 		public const string SCHOOL = "UAlberta";
 
+        private PathFinder pFinder;
+
 		/// <summary>
 		/// The name of the player.
 		/// </summary>
@@ -95,6 +97,7 @@ namespace PlayerCSharpAI.AI
 
 			try
 			{
+                pFinder = new PathFinder();
 				GameMap = map;
 				Players = players;
 				Me = me;
@@ -103,6 +106,7 @@ namespace PlayerCSharpAI.AI
 				sendOrders = ordersEvent;
 
 				List<Passenger> pickup = AllPickups(me, passengers);
+                pFinder.computeAllPaths(map);
 
 				// get the path from where we are to the dest.
 				List<Point> path = CalculatePathPlus1(me, pickup[0].Lobby.BusStop);
@@ -209,6 +213,17 @@ namespace PlayerCSharpAI.AI
 				path.Add(path[path.Count - 2]);
 			return path;
 		}
+
+        /// <summary>
+        /// Returns the time it will take for a player to get to destination point
+        /// </summary>
+        /// <param name="me">Player object</param>
+        /// <param name="ptDest">Destination Point</param>
+        /// <returns></returns>
+        private int CalculateDestTime(Player me, Point ptDest)
+        {
+            return -1;
+        }
 
 		private static List<Passenger> AllPickups(Player me, IEnumerable<Passenger> passengers)
 		{
