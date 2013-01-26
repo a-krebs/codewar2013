@@ -17,7 +17,8 @@ namespace PlayerCSharpAI.AI
 	{
 		// bugbug - put your team name here.
 		private const string NAME = "4 Bits";
-        GameStatusInfo GameInfo = new GameStatusInfo();
+        GameStatusInfo GameInfo;
+        
 
 		// bugbug - put your school name here. Must be 11 letters or less (ie use MIT, not Massachussets Institute of Technology).
 		public const string SCHOOL = "UAlberta";
@@ -100,6 +101,8 @@ namespace PlayerCSharpAI.AI
 			{
                 pFinder = new PathFinder();
 				GameMap = map;
+                GameInfo = new GameStatusInfo();
+                GameInfo.Setup(map, pFinder);
 				Players = players;
 				Me = me;
 				Companies = companies;
@@ -222,26 +225,65 @@ namespace PlayerCSharpAI.AI
                 // if not, compare the scores of top actions
                 // if there's not a big difference, stay on current action
                 case PlayerAIBase.STATUS.UPDATE:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.NO_PATH:
-                    // that's fine, default action
+                // that's fine, default action
                 case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
-                    // if we have no passenger, decide who we want.
-                    // if we have a passenger, make sure we still want them.
-                    // that's the default action
+                // if we have no passenger, decide who we want.
+                // if we have a passenger, make sure we still want them.
+                // that's the default action
                 case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.PASSENGER_REFUSED:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
-                    //default action
+                //default action
                 case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
-                    // default action
+                // default action
                 default:
-                    foreach (Game
-                    List<Passenger> sortedPassengers =  GetPassengerWeights(Me, passengers).Values.ToList();
+                    {
+                        // Go to the best-expected company.
+                        SortedDictionary<float, Company> bestBusStop = new SortedDictionary<float, Company>();
+                        foreach (Company company in GameInfo.activeBusStops())
+                        {
+                            // Sort passengers at this stop.
+                            SortedDictionary<float, Passenger> passengersAtStop = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(company));
+                            
+                            // TODO: Ensure descending order.
+                            // Time for us to get there
+                            float our_time = pFinder.GetTime(pFinder.computeFastestPath(GameMap,Me.Limo.TilePosition, company.BusStop));
+                            // Number of other players closer/same than us. Buffer time of 100sec.
+                            int other_players = GameInfo.OtherPlayersWithinTimeToLocation(our_time+100f, company.BusStop).Count;
+
+                            // If there's one enemy within range, the 2nd highest has to be good enough. If 3rd, they have to be high enough. Etc.
+                            int minCount = Math.Min(other_players, passengersAtStop.Count);
+                            float average = 0;
+                            // have to go in descending order for this.
+                            for (int i = passengersAtStop.Count-1; i >= passengersAtStop.Count-minCount; i--) {
+                                average += passengersAtStop.Keys.ToList()[i];
+                            }
+                           /* for (int i = 0; i < minCount; i++)
+                            {
+                                average += passengersAtStop.Keys.ToList()[i];
+                            }*/
+                            average /= minCount;
+
+                            // Add the average value & company to result
+                            bestBusStop.Add(average, company);
+                        }
+                        // go to the best bus stop. Set the desired player_list to the top at the bus stop
+                        int numberOfResults = bestBusStop.Count;
+                        Company winningCompany = bestBusStop.Values.ToList()[numberOfResults-1];
+
+                        List<Point> path = pFinder.computeFastestPath(GameMap, Me.Limo.TilePosition, winningCompany.BusStop);
+                        List<Passenger> passengerList = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(winningCompany)).Values.ToList();
+                        passengerList.Reverse();
+
+                        sendOrders("ready", path, passengerList);
+
+                    } break;
             }
         }
 

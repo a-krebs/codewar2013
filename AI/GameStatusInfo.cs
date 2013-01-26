@@ -11,12 +11,17 @@ namespace PlayerCSharpAI.AI
   
     class GameStatusInfo
     {
-        List<Player> playersList;
-        List<Passenger> passengerList;
-        List<Limo> limosList;
+        public List<Player> playersList;
+        public List<Passenger> passengerList;
+        public List<Limo> limosList;
+        PathFinder pFinder;
+        Map map;
 
-        void GameStatusInfo()
-        {}
+        public void Setup(Map m, PathFinder pathing)
+        {
+            pFinder = pathing;
+            map = m;
+        }
 
         public void update(List<Player> players, List<Passenger> passenger)
         {
@@ -33,11 +38,26 @@ namespace PlayerCSharpAI.AI
         /*
          * returns list of available passengers. removes passenger that are done there route
          */
-        public List<Passenger> availablePassengers(List<Passenger> passengers)
+        public List<Passenger> availablePassengers()
         {
+            List<Passenger> Result = passengerList;
+            Result.RemoveAll(DestinationNull);
+            return Result;
+        }
 
-            passengers.RemoveAll(DestinationNull);
-            return passengers;
+        /*
+         * return list of all places with passengers at them
+         */
+        public List<Company> activeBusStops()
+        {
+            List<Company> Result = new List<Company>();
+
+            foreach (Passenger p in availablePassengers())
+            {
+                if (!Result.Contains(p.Lobby))
+                    Result.Add(p.Lobby);
+            }
+            return Result;
         }
 
         /*
@@ -71,16 +91,15 @@ namespace PlayerCSharpAI.AI
          * can make it to that location in the desired time.
          */
         public List<Limo> OtherPlayersWithinTimeToLocation(float time, Point target ) {
-            Object pathfinder = new Object();
             List<Limo> Result = new List<Limo>();
 
             
 
             foreach (Limo limo in limosList) {
                 // get the path and time needed for limo to get to location
-                List<Point> optimal_path = pathfinder.GetPath(limo.TilePosition, target);
-                float time_Limo = pathfinder.GetTime(optimal_path);
-                
+                List<Point> optimal_path = pFinder.computeFastestPath(map,limo.TilePosition, target);
+                float time_Limo = pFinder.GetTime(optimal_path);
+
                 // if path switched, then have to add turning time
                 int direction = 0;
                 if (optimal_path[0] != limo.Path[0])
