@@ -151,7 +151,7 @@ namespace PlayerCSharpAI.AI
         }
 
 
-        List<Point> computeFastestPath(Map map, Point start, Point end)
+        public List<Point> computeFastestPath(Map map, Point start, Point end)
         {
             //Should never happen but just to be sure
             if (start == end)
