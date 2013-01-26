@@ -12,12 +12,14 @@ namespace PlayerCSharpAI.AI
         public Point start { get; protected set; }
         public Point end { get; protected set; }
         public double pathScore { get; protected set; }
+        public int pathLength { get; protected set; }
 
         public Path(Point start, Point end, double pathScore)
         {
             this.start = start;
             this.end = end;
             this.pathScore = pathScore;
+            this.pathLength = (end.X - start.X) + (end.Y - start.Y);
         }
         
     }
