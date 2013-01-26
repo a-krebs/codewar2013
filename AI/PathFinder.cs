@@ -46,23 +46,34 @@ namespace PlayerCSharpAI.AI
                         }
                         //We have a path of at least length 1
                         //TODO: Fix when we have a point at 0,0
-                        if(firstPoint != Point.Empty){
-                            paths.Add(new Path(firstPoint, previousPoint, pathScore/(previousPoint.Y - firstPoint.Y)));
+                        if (firstPoint != Point.Empty)
+                        {
+                            paths.Add(new Path(firstPoint, previousPoint, pathScore / (previousPoint.Y - firstPoint.Y)));
                         }
                         calculatedSpeed = 0;
+                        pathScore = 0;
                         firstPoint = Point.Empty;
                         previousPoint = Point.Empty;
                         continue;
                     }
                     //We have a road tile!
                     //Starting a new segment
-                    if (previousPoint == Point.Empty){
-                        firstPoint = currentPoint;
+                    if (calculatedSpeed == 0)
+                    {
+                        if (map.SquareOrDefault(previousPoint).IsDriveable)
+                        {
+                            firstPoint = previousPoint;
+                            calculatedSpeed = 1;
+                            pathScore = 1;
+                        }
+                        else
+                        {
+                            firstPoint = currentPoint;
+                        }
                     }
                     calculatedSpeed = Math.Max(MIN_SPEED, Math.Min(calculatedSpeed + 0.1, MAX_SPEED));
                     pathScore += calculatedSpeed;
                     previousPoint = currentPoint;
-
                 }
             }
 
