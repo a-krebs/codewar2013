@@ -34,8 +34,9 @@
     <StartupObject>PlayerCSharpAI.Framework</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\libs\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\IPlayerAI.cs" />
+    <Compile Include="AI\Path.cs" />
+    <Compile Include="AI\PathFinder.cs" />
     <Compile Include="AI\SimpleAStar.cs" />
     <Compile Include="api\Map.cs" />
     <Compile Include="api\MapSquare.cs" />
@@ -67,7 +70,14 @@
     <EmbeddedResource Include="AI\MyAvatar.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PlayerCSharpAI.exe.config" />
+    <None Include="PlayerCSharpAI.exe.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="log4net.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
