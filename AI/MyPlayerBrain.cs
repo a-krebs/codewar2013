@@ -244,10 +244,45 @@ namespace PlayerCSharpAI.AI
                 // default action
                 default:
                     {
+                        // Go to the best-expected company.
+                        SortedDictionary<float, Company> bestBusStop = new SortedDictionary<float, Company>();
                         foreach (Company company in GameInfo.activeBusStops())
                         {
-                            List<Passenger> sortedPassengers = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(company)).Values.ToList();
+                            // Sort passengers at this stop.
+                            SortedDictionary<float, Passenger> passengersAtStop = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(company));
+                            
+                            // TODO: Ensure descending order.
+                            // Time for us to get there
+                            float our_time = pFinder.GetTime(pFinder.computeFastestPath(GameMap,Me.Limo.TilePosition, company.BusStop));
+                            // Number of other players closer/same than us. Buffer time of 100sec.
+                            int other_players = GameInfo.OtherPlayersWithinTimeToLocation(our_time+100f, company.BusStop).Count;
+
+                            // If there's one enemy within range, the 2nd highest has to be good enough. If 3rd, they have to be high enough. Etc.
+                            int minCount = Math.Min(other_players, passengersAtStop.Count);
+                            float average = 0;
+                            // have to go in descending order for this.
+                            for (int i = passengersAtStop.Count-1; i >= passengersAtStop.Count-minCount; i--) {
+                                average += passengersAtStop.Keys.ToList()[i];
+                            }
+                           /* for (int i = 0; i < minCount; i++)
+                            {
+                                average += passengersAtStop.Keys.ToList()[i];
+                            }*/
+                            average /= minCount;
+
+                            // Add the average value & company to result
+                            bestBusStop.Add(average, company);
                         }
+                        // go to the best bus stop. Set the desired player_list to the top at the bus stop
+                        int numberOfResults = bestBusStop.Count;
+                        Company winningCompany = bestBusStop.Values.ToList()[numberOfResults-1];
+
+                        List<Point> path = pFinder.computeFastestPath(GameMap, Me.Limo.TilePosition, winningCompany.BusStop);
+                        List<Passenger> passengerList = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(winningCompany)).Values.ToList();
+                        passengerList.Reverse();
+
+                        sendOrders("ready", path, passengerList);
+
                     } break;
             }
         }

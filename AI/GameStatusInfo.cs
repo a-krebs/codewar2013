@@ -98,8 +98,8 @@ namespace PlayerCSharpAI.AI
             foreach (Limo limo in limosList) {
                 // get the path and time needed for limo to get to location
                 List<Point> optimal_path = pFinder.computeFastestPath(map,limo.TilePosition, target);
-               // float time_Limo = pFinder.GetTime(optimal_path);
-                float time_Limo = 0;
+                float time_Limo = pFinder.GetTime(optimal_path);
+
                 // if path switched, then have to add turning time
                 int direction = 0;
                 if (optimal_path[0] != limo.Path[0])
