@@ -138,36 +138,10 @@ namespace PlayerCSharpAI.AI
 
 				Point ptDest;
 				List<Passenger> pickup = new List<Passenger>();
-				switch (status)
-				{
-					case PlayerAIBase.STATUS.UPDATE:
-						return;
-					case PlayerAIBase.STATUS.NO_PATH:
-					case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
-						if (plyrStatus.Limo.Passenger == null)
-						{
-							pickup = AllPickups(plyrStatus, passengers);
-							ptDest = pickup[0].Lobby.BusStop;
-						}
-						else
-							ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
-						break;
-					case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
-					case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
-						pickup = AllPickups(plyrStatus, passengers);
-						ptDest = pickup[0].Lobby.BusStop;
-						break;
-					case PlayerAIBase.STATUS.PASSENGER_REFUSED:
-						ptDest = Companies.Where(cpy => cpy != plyrStatus.Limo.Passenger.Destination).OrderBy(cpy => rand.Next()).First().BusStop;
-						break;
-					case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
-					case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
-						pickup = AllPickups(plyrStatus, passengers);
-						ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
-						break;
-					default:
-						throw new ApplicationException("unknown status");
-				}
+
+   				// determine where we want to go and who we want to pick up
+                pickup = MakeDecision(status, plyrStatus, players, passengers);
+                ptDest = pickup[0].Lobby.BusStop;
 
 				// get the path from where we are to the dest.
 				List<Point> path = CalculatePathPlus1(plyrStatus, ptDest);
@@ -219,5 +193,92 @@ namespace PlayerCSharpAI.AI
 					(psngr.Lobby != null) && (psngr.Destination != null)).OrderBy(psngr => rand.Next()));
 			return pickup;
 		}
+
+        private List<Passenger> MakeDecision(PlayerAIBase.STATUS status, Player plyrStatus, List<Player> players, List<Passenger> passengers)
+        {
+            // 
+            //switch (status)
+            //{
+            //    case PlayerAIBase.STATUS.UPDATE:
+            //        return;
+            //    case PlayerAIBase.STATUS.NO_PATH:
+            //    case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
+            //        if (plyrStatus.Limo.Passenger == null)
+            //        {
+            //            pickup = AllPickups(plyrStatus, passengers);
+            //            ptDest = pickup[0].Lobby.BusStop;
+            //        }
+            //        else
+            //            ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
+            //        break;
+            //    case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
+            //    case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
+            //        pickup = AllPickups(plyrStatus, passengers);
+            //        ptDest = pickup[0].Lobby.BusStop;
+            //        break;
+            //    case PlayerAIBase.STATUS.PASSENGER_REFUSED:
+            //        ptDest = Companies.Where(cpy => cpy != plyrStatus.Limo.Passenger.Destination).OrderBy(cpy => rand.Next()).First().BusStop;
+            //        break;
+            //    case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
+            //    case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
+            //        pickup = AllPickups(plyrStatus, passengers);
+            //        ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
+            //        break;
+            //    default:
+            //        throw new ApplicationException("unknown status");
+            //}
+            // determine which passenger has highest score
+
+            return GetPassengerWeights(Me, passengers).Values.ToList();
+
+            
+        }
+
+        /// <summary>
+        /// A dictionary containing values of all passengers that are not in limos
+        /// </summary>
+        /// <param name="passengers"></param>
+        /// <returns></returns>
+        private SortedDictionary<float, Passenger> GetPassengerWeights(Player player, List<Passenger> passengers)
+        {
+            SortedDictionary<float, Passenger> weights = new SortedDictionary<float, Passenger>();
+            for (int i = 0; i < passengers.Count; i++)
+            {
+                if (passengers[i].Lobby != null) {
+                    weights.Add(SinglePassengerWeight(player, passengers[i]), passengers[i]);
+                }
+            }
+            return weights;
+        }
+
+        /// <summary>
+        /// alpha * (score + 0.5*distance_to_dest)) - beta * (time_to_location + pickup_time + time_to_dest)
+        /// </summary>
+        /// <param name="passenger"></param>
+        /// <returns></returns>
+        private float SinglePassengerWeight(Player player, Passenger passenger)
+        {
+            // get the wiehgts from the configuration file
+            float ALPHA = 1.0F;
+            float BETA = 1.0F;
+            float DIST_CONTSTANT = 0.5F;
+            // time to perform pickup of player
+            int PICKUP_TIME = 130;
+
+            if (passenger.Lobby != null ) {
+                return ALPHA * (passenger.PointsDelivered + 0.5
+                    * DistanceSrcDest(passenger.Lobby.BusStop, passenger.Destination.BusStop))
+                    - BETA * (TimeSrcDst(player.Limo.TilePosition, passenger.Lobby.BusStop) + PICKUP_TIME + TimeSrcDst(passenger.Lobby.BusStop, passenger.Route[0].BusStop)
+                );
+            } else {
+                return -1.0F;
+            }
+        }
+
+        private Point GetDestination(Passenger passenger)
+        {
+ 	        throw new NotImplementedException();
+        }
+
 	}
 }
