@@ -17,7 +17,8 @@ namespace PlayerCSharpAI.AI
 	{
 		// bugbug - put your team name here.
 		private const string NAME = "4 Bits";
-        GameStatusInfo GameInfo = new GameStatusInfo();
+        GameStatusInfo GameInfo;
+        
 
 		// bugbug - put your school name here. Must be 11 letters or less (ie use MIT, not Massachussets Institute of Technology).
 		public const string SCHOOL = "UAlberta";
@@ -100,6 +101,8 @@ namespace PlayerCSharpAI.AI
 			{
                 pFinder = new PathFinder();
 				GameMap = map;
+                GameInfo = new GameStatusInfo();
+                GameInfo.Setup(map, pFinder);
 				Players = players;
 				Me = me;
 				Companies = companies;
@@ -222,26 +225,30 @@ namespace PlayerCSharpAI.AI
                 // if not, compare the scores of top actions
                 // if there's not a big difference, stay on current action
                 case PlayerAIBase.STATUS.UPDATE:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.NO_PATH:
-                    // that's fine, default action
+                // that's fine, default action
                 case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
-                    // if we have no passenger, decide who we want.
-                    // if we have a passenger, make sure we still want them.
-                    // that's the default action
+                // if we have no passenger, decide who we want.
+                // if we have a passenger, make sure we still want them.
+                // that's the default action
                 case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.PASSENGER_REFUSED:
-                    // default action
+                // default action
                 case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
-                    //default action
+                //default action
                 case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
-                    // default action
+                // default action
                 default:
-                    foreach (Game
-                    List<Passenger> sortedPassengers =  GetPassengerWeights(Me, passengers).Values.ToList();
+                    {
+                        foreach (Company company in GameInfo.activeBusStops())
+                        {
+                            List<Passenger> sortedPassengers = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(company)).Values.ToList();
+                        }
+                    } break;
             }
         }
 
