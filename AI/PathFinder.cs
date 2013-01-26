@@ -12,9 +12,11 @@ namespace PlayerCSharpAI.AI
         private static int MAX_SPEED = 6;
         private static int MIN_SPEED = 1;
         protected List<Path> paths = new List<Path>();
+        protected double[,] matrix = null;
+        Dictionary<int, Point> labels = new Dictionary<int, Point>();
+        Dictionary<Point, int> indices = new Dictionary<Point, int>();
 
         public PathFinder(){
-            
         }
         public void computeAllPaths(Map map)
         {
@@ -150,18 +152,63 @@ namespace PlayerCSharpAI.AI
 
         }
 
-
         public List<Point> computeFastestPath(Map map, Point start, Point end)
         {
-            //Should never happen but just to be sure
+            // Should never happen but just to be sure
             if (start == end)
             {
                 return new List<Point> { start };
             }
 
+            // get the start point's index
+            int startIndex = indices[start];
 
+            // run dijkstra's on the graph
+            Dijkstra calculator = new Dijkstra(matrix, startIndex);
 
-            return null;
+            // build list of resulting path
+            List<Point> fastestPath = new List<Point>();
+            foreach (int nodeIndex in calculator.path)
+            {
+                fastestPath.Add(labels[nodeIndex]);
+            }
+            return fastestPath;
+        }
+
+        public void generateAdjacencyMatrix()
+        {
+            // get all nodes
+            List<Point> nodes = (from a in paths select a.start).Union(from b in paths select b.end).Distinct().ToList();
+            // label them by integer
+           
+            int index = 0;
+            foreach (Point n in nodes)
+            {
+                labels.Add(index, n);
+                indices.Add(n, index);
+                index++;
+            }
+            matrix = new double[labels.Count, labels.Count];
+
+            for (int i = 0; i < labels.Count; i++)
+            {
+                for (int j = 0; j < labels.Count; j++)
+                {
+                    matrix[i, j] = WeightOfPath(labels[i], labels[j], paths);
+                }
+            }
+        }
+
+        private double WeightOfPath(Point start, Point end, List<Path> paths)
+        {
+            foreach (Path path in paths)
+            {
+                if (path.start == start && path.end == end)
+                {
+                    return path.pathScore;
+                }
+            }
+            return 0;
         }
     }
 }
