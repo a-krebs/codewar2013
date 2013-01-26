@@ -196,42 +196,34 @@ namespace PlayerCSharpAI.AI
 
         private List<Passenger> MakeDecision(PlayerAIBase.STATUS status, Player plyrStatus, List<Player> players, List<Passenger> passengers)
         {
-            // 
-            //switch (status)
-            //{
-            //    case PlayerAIBase.STATUS.UPDATE:
-            //        return;
-            //    case PlayerAIBase.STATUS.NO_PATH:
-            //    case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
-            //        if (plyrStatus.Limo.Passenger == null)
-            //        {
-            //            pickup = AllPickups(plyrStatus, passengers);
-            //            ptDest = pickup[0].Lobby.BusStop;
-            //        }
-            //        else
-            //            ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
-            //        break;
-            //    case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
-            //    case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
-            //        pickup = AllPickups(plyrStatus, passengers);
-            //        ptDest = pickup[0].Lobby.BusStop;
-            //        break;
-            //    case PlayerAIBase.STATUS.PASSENGER_REFUSED:
-            //        ptDest = Companies.Where(cpy => cpy != plyrStatus.Limo.Passenger.Destination).OrderBy(cpy => rand.Next()).First().BusStop;
-            //        break;
-            //    case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
-            //    case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
-            //        pickup = AllPickups(plyrStatus, passengers);
-            //        ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
-            //        break;
-            //    default:
-            //        throw new ApplicationException("unknown status");
-            //}
-            // determine which passenger has highest score
-
-            return GetPassengerWeights(Me, passengers).Values.ToList();
-
-            
+             
+            switch (status)
+            {
+                // action should always be :
+                // make sure action is still the desired one
+                // if not, compare the scores of top actions
+                // if there's not a big difference, stay on current action
+                case PlayerAIBase.STATUS.UPDATE:
+                    // default action
+                case PlayerAIBase.STATUS.NO_PATH:
+                    // that's fine, default action
+                case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
+                    // if we have no passenger, decide who we want.
+                    // if we have a passenger, make sure we still want them.
+                    // that's the default action
+                case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
+                    // default action
+                case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
+                    // default action
+                case PlayerAIBase.STATUS.PASSENGER_REFUSED:
+                    // default action
+                case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
+                    //default action
+                case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
+                    // default action
+                default:
+                    return GetPassengerWeights(Me, passengers).Values.ToList();
+            }
         }
 
         /// <summary>
