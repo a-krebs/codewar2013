@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\IPlayerAI.cs" />
+    <Compile Include="AI\Path.cs" />
+    <Compile Include="AI\PathFinder.cs" />
     <Compile Include="AI\SimpleAStar.cs" />
     <Compile Include="api\Map.cs" />
     <Compile Include="api\MapSquare.cs" />
