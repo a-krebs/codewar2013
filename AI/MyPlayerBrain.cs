@@ -17,6 +17,7 @@ namespace PlayerCSharpAI.AI
 	{
 		// bugbug - put your team name here.
 		private const string NAME = "4 Bits";
+        GameStatusInfo GameInfo = new GameStatusInfo();
 
 		// bugbug - put your school name here. Must be 11 letters or less (ie use MIT, not Massachussets Institute of Technology).
 		public const string SCHOOL = "UAlberta";
@@ -140,6 +141,8 @@ namespace PlayerCSharpAI.AI
 				if (plyrStatus != Me)
 					return;
 
+                GameInfo.update(players, passengers);
+
 				Point ptDest;
 				List<Passenger> pickup = new List<Passenger>();
 
@@ -237,7 +240,8 @@ namespace PlayerCSharpAI.AI
                 case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
                     // default action
                 default:
-                    return GetPassengerWeights(Me, passengers).Values.ToList();
+                    foreach (Game
+                    List<Passenger> sortedPassengers =  GetPassengerWeights(Me, passengers).Values.ToList();
             }
         }
 

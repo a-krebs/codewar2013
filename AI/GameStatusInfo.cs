@@ -15,17 +15,19 @@ namespace PlayerCSharpAI.AI
         List<Passenger> passengerList;
         List<Limo> limosList;
 
-        void GameStatusInfo(List<Player> players, List<Passenger> passenger)
+        void GameStatusInfo()
+        {}
+
+        public void update(List<Player> players, List<Passenger> passenger)
         {
             playersList = players;
             passengerList = passenger;
-            
+
             foreach (Player player in playersList)
             {
                 limosList.Add(player.Limo);
 
             }
-
         }
 
         /*
