@@ -27,6 +27,6 @@ namespace PlayerCSharpAI
 			if (stopOnBreak && breakOn)
 				System.Diagnostics.Debugger.Break();
 #endif
-		}
+		} 
 	}
 }
