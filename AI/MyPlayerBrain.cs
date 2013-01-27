@@ -278,13 +278,14 @@ namespace PlayerCSharpAI.AI
                         int numberOfResults = bestBusStop.Count;
                         Company winningCompany = bestBusStop.Values.ToList()[numberOfResults-1];
 
-                        List<Point> path = pFinder.computeFastestPath(Me.Limo.TilePosition, winningCompany.BusStop);
+                        //List<Point> path = pFinder.computeFastestPath(Me.Limo.TilePosition, winningCompany.BusStop);
                         List<Passenger> passengerList = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(winningCompany)).Values.ToList();
                         passengerList.Reverse();
 
-                        sendOrders("ready", path, passengerList);
+                        return passengerList;
 
-                    } break;
+                    }
+                    
             }
         }
 
@@ -313,7 +314,7 @@ namespace PlayerCSharpAI.AI
         private double SinglePassengerWeight(Player player, Passenger passenger)
         {
             // get the wiehgts from the configuration file
-            double ALPHA = 1.0;
+            double ALPHA = 7.0;
             double BETA = 1.0;
             double DIST_CONTSTANT = 0.5;
             // time to perform pickup of player
