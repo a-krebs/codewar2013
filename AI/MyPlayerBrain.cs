@@ -151,8 +151,37 @@ namespace PlayerCSharpAI.AI
 				List<Passenger> pickup = new List<Passenger>();
 
    				// determine where we want to go and who we want to pick up
-                pickup = MakeDecision(status, plyrStatus, players, passengers);
-                ptDest = pickup[0].Lobby.BusStop;
+                switch (status)
+                {
+                    case PlayerAIBase.STATUS.UPDATE:
+                        return;
+                    case PlayerAIBase.STATUS.NO_PATH:
+                    case PlayerAIBase.STATUS.PASSENGER_NO_ACTION:
+                        if (plyrStatus.Limo.Passenger == null)
+                        {
+                            pickup = MakeDecision(status, plyrStatus, players, passengers);
+                            ptDest = pickup[0].Lobby.BusStop;
+                        }
+                        else
+                            ptDest = plyrStatus.Limo.Passenger.Destination.BusStop;
+                        break;
+                    case PlayerAIBase.STATUS.PASSENGER_DELIVERED:
+                    case PlayerAIBase.STATUS.PASSENGER_ABANDONED:
+                        pickup = MakeDecision(status, plyrStatus, players, passengers);
+                        ptDest = pickup[0].Lobby.BusStop;
+                        break;
+                    case PlayerAIBase.STATUS.PASSENGER_REFUSED:
+                        pickup = MakeDecision(status, plyrStatus, players, passengers);
+                        ptDest = pickup[0].Lobby.BusStop;
+                        break;
+                    case PlayerAIBase.STATUS.PASSENGER_DELIVERED_AND_PICKED_UP:
+                    case PlayerAIBase.STATUS.PASSENGER_PICKED_UP:
+                        pickup = MakeDecision(status, plyrStatus, players, passengers);
+                        ptDest = pickup[0].Lobby.BusStop;
+                        break;
+                    default:
+                        throw new ApplicationException("unknown status");
+                }
 
 				// get the path from where we are to the dest.
 				List<Point> path = CalculatePathPlus1(plyrStatus, ptDest);
