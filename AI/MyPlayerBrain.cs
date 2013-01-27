@@ -277,7 +277,7 @@ namespace PlayerCSharpAI.AI
                         int numberOfResults = bestBusStop.Count;
                         Company winningCompany = bestBusStop.Values.ToList()[numberOfResults-1];
 
-                        List<Point> path = pFinder.computeFastestPath(GameMap, Me.Limo.TilePosition, winningCompany.BusStop);
+                        List<Point> path = pFinder.computeFastestPath(Me.Limo.TilePosition, winningCompany.BusStop);
                         List<Passenger> passengerList = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(winningCompany)).Values.ToList();
                         passengerList.Reverse();
 
