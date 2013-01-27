@@ -254,7 +254,7 @@ namespace PlayerCSharpAI.AI
                             
                             // TODO: Ensure descending order.
                             // Time for us to get there
-                            float our_time = pFinder.GetTime(pFinder.computeFastestPath(Me.Limo.TilePosition, company.BusStop));
+                            float our_time = (float)pFinder.getTimeForPath(pFinder.computeFastestPath(Me.Limo.TilePosition, company.BusStop));
                             // Number of other players closer/same than us. Buffer time of 100sec.
                             int other_players = GameInfo.OtherPlayersWithinTimeToLocation(our_time+100f, company.BusStop).Count;
 
