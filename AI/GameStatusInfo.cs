@@ -90,10 +90,9 @@ namespace PlayerCSharpAI.AI
          * Takes the desired time and the target location. Returns all limos that
          * can make it to that location in the desired time.
          */
-        public List<Limo> OtherPlayersWithinTimeToLocation(float time, Point target ) {
+        public List<Limo> OtherPlayersWithinTimeToLocation(double time, Point target ) {
             List<Limo> Result = new List<Limo>();
 
-            
 
             foreach (Limo limo in limosList) {
                 // get the path and time needed for limo to get to location

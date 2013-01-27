@@ -21,7 +21,7 @@ namespace PlayerCSharpAI.AI
         public void computeAllPaths(Map map)
         {
             Point currentPoint = Point.Empty, previousPoint = Point.Empty, firstPoint = Point.Empty;
-            MapSquare square;
+            MapSquare square, firstSquare, previousSquare, currentSquare;
             double pathScore, calculatedSpeed;
             for (int i = 0; i < map.Width; i++)
             {
@@ -30,6 +30,34 @@ namespace PlayerCSharpAI.AI
                 calculatedSpeed = 0;
                 for (int j = 0; j < map.Height; j++)
                 {
+                    firstPoint = new Point(i, j);
+                    firstSquare = map.SquareOrDefault(firstPoint);
+                    previousSquare = map.SquareOrDefault(previousPoint);
+                    //Stop on lights, stop signs and after grass breaks
+                    if (firstSquare == null || !firstSquare.IsDriveable || (previousSquare.IsDriveable && (!firstSquare.Signal || firstSquare.StopSigns == MapSquare.STOP_SIGNS.NONE)))
+                    {
+                        continue;
+                    }
+                    for (int k = j + 1; k < map.Height; k++)
+                    {
+                        currentPoint = new Point(i, k);
+                        currentSquare = map.SquareOrDefault(currentPoint);
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
                     currentPoint = new Point(i, j);
                     square = map.SquareOrDefault(currentPoint);
                     //Not a road tile or not driveable or IS a stop sign or IS a light
