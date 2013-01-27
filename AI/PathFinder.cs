@@ -152,7 +152,7 @@ namespace PlayerCSharpAI.AI
 
         }
 
-        public List<Point> computeFastestPath(Map map, Point start, Point end)
+        public List<Point> computeFastestPath(Point start, Point end)
         {
             // Should never happen but just to be sure
             if (start == end)
@@ -209,6 +209,52 @@ namespace PlayerCSharpAI.AI
                 }
             }
             return 0;
+        }
+
+        public double DistanceSrcDest(Point start, Point end)
+        {
+            List<Point> points_list = computeFastestPath(start, end);
+            double sum = new double();
+            sum = 0;
+            for (int i = 0; i < points_list.Count - 1; i++)
+            {
+                Point path_start = points_list[i];
+                Point path_end = points_list[i + 1];
+
+                sum += getPath(path_start, path_end).pathLength;
+            }
+            return sum;
+        }
+
+         /*
+         * Gets the time it will take to go along path. Refactored from
+         * other methods.
+         */
+        public double getTimeForPath(List<Point> points_list)
+        {
+            double sum = 0;
+            for (int i=0; i<points_list.Count-1; i++)
+            {
+                Point start = points_list[i];
+                Point end = points_list[i + 1];
+
+                sum += getPath(start, end).pathTime;
+
+            }
+
+            return sum;
+        }
+
+        public Path getPath(Point start, Point end) {
+             foreach (Path path in paths)
+            {
+                if ((path.start == start && path.end == end) ||
+                    (path.start == end && path.end == start))
+                {
+                    return path;
+                }
+            }
+            return null;
         }
     }
 }
