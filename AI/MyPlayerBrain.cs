@@ -247,7 +247,8 @@ namespace PlayerCSharpAI.AI
 
         private List<Passenger> MakeDecision(PlayerAIBase.STATUS status, Player plyrStatus, List<Player> players, List<Passenger> passengers)
         {
-             
+            if (Me.Limo.Passenger != null)
+                return Me.PickUp;
             switch (status)
             {
                 // action should always be :
@@ -274,6 +275,7 @@ namespace PlayerCSharpAI.AI
                 // default action
                 default:
                     {
+
                         // Go to the best-expected company.
                         SortedDictionary<float, Company> bestBusStop = new SortedDictionary<float, Company>();
                         foreach (Company company in GameInfo.activeBusStops())
