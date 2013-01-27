@@ -312,7 +312,7 @@ namespace PlayerCSharpAI.AI
         private float SinglePassengerWeight(Player player, Passenger passenger)
         {
             // get the wiehgts from the configuration file
-            float ALPHA = 1.0F;
+            float ALPHA = 7.0F;
             float BETA = 1.0F;
             float DIST_CONTSTANT = 0.5F;
             // time to perform pickup of player
