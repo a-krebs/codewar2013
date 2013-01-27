@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\Dijkstra.cs" />
     <Compile Include="AI\GameStatusInfo.cs" />
     <Compile Include="AI\IPlayerAI.cs" />
     <Compile Include="AI\Path.cs" />
