@@ -111,7 +111,6 @@ namespace PlayerCSharpAI.AI
 
 				List<Passenger> pickup = AllPickups(me, passengers);
                 pFinder.computeAllPaths(map);
-                pFinder.generateAdjacencyMatrix();
 
 				// get the path from where we are to the dest.
 				List<Point> path = CalculatePathPlus1(me, pickup[0].Lobby.BusStop);
@@ -249,14 +248,14 @@ namespace PlayerCSharpAI.AI
                         SortedDictionary<float, Company> bestBusStop = new SortedDictionary<float, Company>();
                         foreach (Company company in GameInfo.activeBusStops())
                         {
+                            
                             // Sort passengers at this stop.
                             SortedDictionary<float, Passenger> passengersAtStop = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(company));
                             
-                            // TODO: Ensure descending order.
-                            // Time for us to get there
-                            float our_time = pFinder.GetTime(pFinder.computeFastestPath(Me.Limo.TilePosition, company.BusStop));
+                            // Time taken for us to get there
+                            double our_time = pFinder.getTimeForPath(pFinder.computeFastestPath(Me.Limo.TilePosition, company.BusStop));
                             // Number of other players closer/same than us. Buffer time of 100sec.
-                            int other_players = GameInfo.OtherPlayersWithinTimeToLocation(our_time+100f, company.BusStop).Count;
+                            int other_players = GameInfo.OtherPlayersWithinTimeToLocation((our_time+100.0), company.BusStop).Count;
 
                             // If there's one enemy within range, the 2nd highest has to be good enough. If 3rd, they have to be high enough. Etc.
                             int minCount = Math.Min(other_players, passengersAtStop.Count);
@@ -278,7 +277,7 @@ namespace PlayerCSharpAI.AI
                         int numberOfResults = bestBusStop.Count;
                         Company winningCompany = bestBusStop.Values.ToList()[numberOfResults-1];
 
-                        List<Point> path = pFinder.computeFastestPath(Me.Limo.TilePosition, winningCompany.BusStop);
+                        List<Point> path = pFinder.computeFastestPath(GameMap, Me.Limo.TilePosition, winningCompany.BusStop);
                         List<Passenger> passengerList = GetPassengerWeights(Me, GameInfo.PassengerAtLocation(winningCompany)).Values.ToList();
                         passengerList.Reverse();
 
@@ -299,7 +298,7 @@ namespace PlayerCSharpAI.AI
             for (int i = 0; i < passengers.Count; i++)
             {
                 if (passengers[i].Lobby != null) {
-                    weights.Add((float)SinglePassengerWeight(player, passengers[i]), passengers[i]);
+                    weights.Add(SinglePassengerWeight(player, passengers[i]), passengers[i]);
                 }
             }
             return weights;
@@ -310,19 +309,19 @@ namespace PlayerCSharpAI.AI
         /// </summary>
         /// <param name="passenger"></param>
         /// <returns></returns>
-        private double SinglePassengerWeight(Player player, Passenger passenger)
+        private float SinglePassengerWeight(Player player, Passenger passenger)
         {
             // get the wiehgts from the configuration file
-            double ALPHA = 1.0;
-            double BETA = 1.0;
-            double DIST_CONTSTANT = 0.5;
+            float ALPHA = 1.0F;
+            float BETA = 1.0F;
+            float DIST_CONTSTANT = 0.5F;
             // time to perform pickup of player
             int PICKUP_TIME = 130;
 
             if (passenger.Lobby != null ) {
-                return ALPHA * (passenger.PointsDelivered + DIST_CONTSTANT
-                    * pFinder.DistanceSrcDest(passenger.Lobby.BusStop, passenger.Destination.BusStop))
-                    - BETA * (pFinder.getTimeForPath(pFinder.computeFastestPath(player.Limo.TilePosition, passenger.Lobby.BusStop)) + PICKUP_TIME + pFinder.getTimeForPath(pFinder.computeFastestPath(passenger.Lobby.BusStop, passenger.Route[0].BusStop))
+                return ALPHA * (passenger.PointsDelivered + 0.5
+                    * DistanceSrcDest(passenger.Lobby.BusStop, passenger.Destination.BusStop))
+                    - BETA * (TimeSrcDst(player.Limo.TilePosition, passenger.Lobby.BusStop) + PICKUP_TIME + TimeSrcDst(passenger.Lobby.BusStop, passenger.Route[0].BusStop)
                 );
             } else {
                 return -1.0F;
