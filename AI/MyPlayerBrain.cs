@@ -218,7 +218,7 @@ namespace PlayerCSharpAI.AI
 
         private List<Passenger> MakeDecision(PlayerAIBase.STATUS status, Player plyrStatus, List<Player> players, List<Passenger> passengers)
         {
-            if (Me.Limo.Passenger == null)
+            if (Me.Limo.Passenger != null)
                 return Me.PickUp;
             switch (status)
             {
