@@ -17,6 +17,13 @@ namespace PlayerCSharpAI.AI
         PathFinder pFinder;
         Map map;
 
+        public GameStatusInfo()
+        {
+            playersList = new List<Player>();
+            passengerList = new List<Passenger>();
+            limosList = new List<Limo>();
+        }
+
         public void Setup(Map m, PathFinder pathing)
         {
             pFinder = pathing;
@@ -54,7 +61,7 @@ namespace PlayerCSharpAI.AI
 
             foreach (Passenger p in availablePassengers())
             {
-                if (!Result.Contains(p.Lobby))
+                if (!Result.Contains(p.Lobby) && p.Lobby != null)
                     Result.Add(p.Lobby);
             }
             return Result;
@@ -100,7 +107,7 @@ namespace PlayerCSharpAI.AI
                 double time_Limo = pFinder.getTimeForPath(optimal_path);
 
                 // if path switched, then have to add turning time
-                if (optimal_path[0] != limo.Path[0])
+                if (limo.Path.Count > 0 && optimal_path.Count > 0 && optimal_path[0] != limo.Path[0])
                     // the turn time was calculated by James. It should work.
                     time_Limo += 4 * 5;
                     
