@@ -26,12 +26,13 @@ namespace PlayerCSharpAI.AI
             for (int i = 0; i < map.Width; i++)
             {
                 //Starting a new row, reset the score
-                pathScore = 0;
-                calculatedSpeed = 0;
+                pathScore = 1;
+                calculatedSpeed = 1;
                 for (int j = 0; j < map.Height; j++)
                 {
                     firstPoint = new Point(i, j);
                     firstSquare = map.SquareOrDefault(firstPoint);
+                    previousPoint = new Point(i, j - 1);
                     previousSquare = map.SquareOrDefault(previousPoint);
                     //Stop on lights, stop signs and after grass breaks
                     if (firstSquare == null || !firstSquare.IsDriveable || (previousSquare.IsDriveable && (!firstSquare.Signal || firstSquare.StopSigns == MapSquare.STOP_SIGNS.NONE)))
@@ -40,11 +41,77 @@ namespace PlayerCSharpAI.AI
                     }
                     for (int k = j + 1; k < map.Height; k++)
                     {
+                        previousPoint = new Point(i, k - 1);
+                        previousSquare = map.SquareOrDefault(previousPoint);
                         currentPoint = new Point(i, k);
                         currentSquare = map.SquareOrDefault(currentPoint);
+                        if (!currentSquare.IsDriveable)
+                        {
+                            //Reached the end of the path
+                            paths.Add(new Path(firstPoint, previousPoint, pathScore / (previousPoint.Y - firstPoint.Y + previousPoint.X - firstPoint.X + 1)));
+                            break;
+                        }
+                        calculatedSpeed = Math.Max(MIN_SPEED, Math.Min(calculatedSpeed + 0.1, MAX_SPEED));
+                        pathScore += calculatedSpeed;
+                        if (currentSquare.Signal || currentSquare.StopSigns != MapSquare.STOP_SIGNS.NONE)
+                        {
+                            paths.Add(new Path(firstPoint, currentPoint, pathScore / (currentPoint.Y - firstPoint.Y + currentPoint.X - firstPoint.X)));
+                            if (currentSquare.StopSigns == MapSquare.STOP_SIGNS.STOP_NORTH || currentSquare.StopSigns == MapSquare.STOP_SIGNS.STOP_SOUTH)
+                            {
+                                //Stop sign is the end of a continuous drivable segment
+                                break;
+                            }
+                        }
 
 
                     }
+                }
+            }
+
+            for (int i = 0; i < map.Height; i++)
+            {
+                //Starting a new row, reset the score
+                pathScore = 1;
+                calculatedSpeed = 1;
+                for (int j = 0; j < map.Width; j++)
+                {
+                    firstPoint = new Point(j, i);
+                    firstSquare = map.SquareOrDefault(firstPoint);
+                    previousPoint = new Point(j - 1, i);
+                    previousSquare = map.SquareOrDefault(previousPoint);
+                    //Stop on lights, stop signs and after grass breaks
+                    if (firstSquare == null || !firstSquare.IsDriveable || (previousSquare.IsDriveable && (!firstSquare.Signal || firstSquare.StopSigns == MapSquare.STOP_SIGNS.NONE)))
+                    {
+                        continue;
+                    }
+                    for (int k = j + 1; k < map.Width; k++)
+                    {
+                        previousPoint = new Point(k - 1, i);
+                        previousSquare = map.SquareOrDefault(previousPoint);
+                        currentPoint = new Point(k, i);
+                        currentSquare = map.SquareOrDefault(currentPoint);
+                        if (!currentSquare.IsDriveable)
+                        {
+                            //Reached the end of the path
+                            paths.Add(new Path(firstPoint, previousPoint, pathScore / (previousPoint.Y - firstPoint.Y + previousPoint.X - firstPoint.X + 1)));
+                            break;
+                        }
+                        calculatedSpeed = Math.Max(MIN_SPEED, Math.Min(calculatedSpeed + 0.1, MAX_SPEED));
+                        pathScore += calculatedSpeed;
+                        if (currentSquare.Signal || currentSquare.StopSigns != MapSquare.STOP_SIGNS.NONE)
+                        {
+                            paths.Add(new Path(firstPoint, currentPoint, pathScore / (currentPoint.Y - firstPoint.Y + currentPoint.X - firstPoint.X)));
+                            if (currentSquare.StopSigns == MapSquare.STOP_SIGNS.STOP_EAST || currentSquare.StopSigns == MapSquare.STOP_SIGNS.STOP_WEST)
+                            {
+                                //Stop sign is the end of a continuous drivable segment
+                                break;
+                            }
+                        }
+
+
+                    }
+                }
+            }
 
 
 
@@ -54,9 +121,7 @@ namespace PlayerCSharpAI.AI
 
 
 
-
-
-
+            /* ORIGINAL IMPLEMENTATION
 
                     currentPoint = new Point(i, j);
                     square = map.SquareOrDefault(currentPoint);
@@ -163,6 +228,7 @@ namespace PlayerCSharpAI.AI
 
                 }
             }
+             */
             //Clean up the paths to remove length 1 paths that are in other paths
             paths = (from a in paths orderby a.start.X, a.start.Y select a).ToList();
             IQueryable<Path> path1 = (from a in paths where (a.end.X == a.start.X && a.end.Y == a.start.Y) orderby a.start.X, a.end.X, a.start.Y, a.end.Y select a).AsQueryable();
@@ -231,7 +297,7 @@ namespace PlayerCSharpAI.AI
         {
             foreach (Path path in paths)
             {
-                if (path.start == start && path.end == end)
+                if ((path.start == start && path.end == end) || (path.start == end && path.end == start))
                 {
                     return path.pathScore;
                 }
@@ -282,7 +348,7 @@ namespace PlayerCSharpAI.AI
                     return path;
                 }
             }
-            return null;
+            return new Path(start, end, 1);
         }
     }
 }
