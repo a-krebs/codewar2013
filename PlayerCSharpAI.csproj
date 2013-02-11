@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\IPlayerAI.cs" />
+    <Compile Include="AI\QLearning.cs" />
     <Compile Include="AI\SimpleAStar.cs" />
     <Compile Include="api\Map.cs" />
     <Compile Include="api\MapSquare.cs" />

@@ -54,11 +54,14 @@ namespace PlayerCSharpAI.AI
 		private PlayerAIBase.PlayerOrdersEvent sendOrders;
 
 		private static readonly Random rand = new Random();
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(MyPlayerBrain)); 
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(MyPlayerBrain));
+
+        private QLearner Learner;
 
 		public MyPlayerBrain(string name)
 		{
 			Name = !string.IsNullOrEmpty(name) ? name : NAME;
+            Learner = new QLearner();
 		}
 
 		/// <summary>
@@ -103,6 +106,8 @@ namespace PlayerCSharpAI.AI
 				sendOrders = ordersEvent;
 
 				List<Passenger> pickup = AllPickups(me, passengers);
+
+                Learner.Initialize(passengers, players, companies);
 
 				// get the path from where we are to the dest.
 				List<Point> path = CalculatePathPlus1(me, pickup[0].Lobby.BusStop);
